@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Intuitive Care</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f9; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; }
+        input { padding: 10px; width: 100%; box-sizing: border-box; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #3498db; color: white; }
+        .pagination { margin-top: 20px; display: flex; justify-content: center; gap: 10px; }
+        button { padding: 8px 16px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:disabled { background-color: #bdc3c7; }
+        .chart-box { margin-bottom: 30px; height: 300px; }
+    </style>
+</head>
+<body>
+
+<div id="app" class="container">
+    <h1>📊 Dashboard de Operadoras</h1>
+
+    <div class="chart-box">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <input type="text" v-model="search" @input="buscarDados" placeholder="🔍 Buscar por Razão Social...">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Operadora</th>
+                <th>UF</th>
+                <th>Despesa Total (R$)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="op in operadoras" :key="op.Razao_Social">
+                <td>{{ op.Razao_Social }}</td>
+                <td>{{ op.UF }}</td>
+                <td>{{ formatarMoeda(op.Total_Despesas) }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <button @click="mudarPagina(-1)" :disabled="page <= 1">Anterior</button>
+        <span>Página {{ page }}</span>
+        <button @click="mudarPagina(1)" :disabled="operadoras.length < limit">Próxima</button>
+    </div>
+</div>
+
+<script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                operadoras: [],
+                search: '',
+                page: 1,
+                limit: 5,
+                chartInstance: null
+            }
+        },
+        methods: {
+            async buscarDados() {
+                try {
+                    const res = await axios.get(`http://127.0.0.1:8000/api/operadoras`, {
+                        params: { page: this.page, limit: this.limit, search: this.search }
+                    });
+                    this.operadoras = res.data.data;
+                } catch (error) {
+                    console.error("Erro ao buscar dados:", error);
+                }
+            },
+            async carregarGrafico() {
+                const res = await axios.get(`http://127.0.0.1:8000/api/estatisticas`);
+                const dados = res.data;
+
+                const ctx = document.getElementById('myChart');
+                this.chartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: dados.map(d => d.UF),
+                        datasets: [{
+                            label: 'Total de Despesas por UF',
+                            data: dados.map(d => d.Total_Despesas),
+                            backgroundColor: '#3498db'
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            },
+            mudarPagina(delta) {
+                this.page += delta;
+                this.buscarDados();
+            },
+            formatarMoeda(valor) {
+                return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            }
+        },
+        mounted() {
+            this.buscarDados();
+            this.carregarGrafico();
+        }
+    }).mount('#app');
+</script>
+
+</body>
+</html>
