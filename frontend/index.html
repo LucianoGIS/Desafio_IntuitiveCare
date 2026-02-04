@@ -56,6 +56,103 @@
     </div>
 </div>
 
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --accent-color: #ecf0f1;
+        --text-color: #333;
+    }
+    body { 
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+        padding: 40px; 
+        background-color: #f8f9fa; 
+        color: var(--text-color);
+    }
+    .container { 
+        max-width: 1000px; 
+        margin: 0 auto; 
+        background: white; 
+        padding: 30px; 
+        border-radius: 12px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+    }
+    h1 { 
+        color: var(--primary-color); 
+        margin-bottom: 30px; 
+        font-weight: 600;
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 15px;
+    }
+    input { 
+        padding: 12px 15px; 
+        width: 100%; 
+        box-sizing: border-box; 
+        margin-bottom: 25px; 
+        border: 1px solid #ddd; 
+        border-radius: 8px; 
+        font-size: 16px;
+        transition: border-color 0.3s;
+    }
+    input:focus {
+        border-color: var(--secondary-color);
+        outline: none;
+    }
+    table { 
+        width: 100%; 
+        border-collapse: separate; 
+        border-spacing: 0;
+        margin-top: 20px; 
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    th, td { 
+        padding: 15px; 
+        text-align: left; 
+        border-bottom: 1px solid #eee; 
+    }
+    th { 
+        background-color: var(--primary-color); 
+        color: white; 
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background-color: #f1f7fb; }
+    
+    .pagination { 
+        margin-top: 30px; 
+        display: flex; 
+        justify-content: center; 
+        gap: 15px; 
+        align-items: center;
+    }
+    button { 
+        padding: 10px 20px; 
+        background-color: var(--secondary-color); 
+        color: white; 
+        border: none; 
+        border-radius: 6px; 
+        cursor: pointer; 
+        font-weight: 500;
+        transition: background-color 0.2s;
+    }
+    button:hover:not(:disabled) { background-color: #2980b9; }
+    button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+    
+    .chart-box { 
+        margin-bottom: 40px; 
+        height: 350px; 
+        padding: 20px;
+        background: white;
+        border: 1px solid #eee;
+        border-radius: 8px;
+    }
+</style>
+
 <script>
     const { createApp } = Vue;
 
